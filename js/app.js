@@ -32,7 +32,9 @@ function getCommodityData(){
 	var arr = [];
 	market.commodities.forEach(function(commodity){
 		var avg = market.getAvgPrice(commodity.name);
-		var diff = market.history.price[commodity.name][market.history.price[commodity.name].length-2] - avg;
+		var current = market.history.price[commodity.name][market.history.price[commodity.name].length-1];
+		var last = market.history.price[commodity.name][market.history.price[commodity.name].length-2];
+		var diff = current - last;
 		var c = {
 			name: commodity.name,
 			priceAvg: avg,
