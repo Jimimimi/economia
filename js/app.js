@@ -1,4 +1,3 @@
-
 var market, 
 	JSONdata,
 	round = 0,
@@ -33,7 +32,7 @@ function getCommodityData(){
 	var arr = [];
 	market.commodities.forEach(function(commodity){
 		var avg = market.getAvgPrice(commodity.name);
-		var diff = avg - market.history.price[commodity.name][market.history.price[commodity.name].length-2]
+		var diff = market.history.price[commodity.name][market.history.price[commodity.name].length-2] - avg;
 		var c = {
 			name: commodity.name,
 			priceAvg: avg,
