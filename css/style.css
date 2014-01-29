@@ -1,1 +1,9 @@
+body {
+	padding: 20px;
+	background: #eee;
+}
 .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+
+th,td {
+	text-align: center;
+}
