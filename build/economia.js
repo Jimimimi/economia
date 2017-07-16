@@ -321,7 +321,6 @@ var Logic = createClass('Logic',{
                 break;
               case 'transform':
                 var amountTarget = amount;
-                console.log(amount);
                 //exchange rate between A -> B  
                 var amountProduct = amount * act.efficiency[i];
                 var result = act.results[i]
@@ -735,7 +734,7 @@ var Economia = createClass('Economia', {
     this.commodities.push(new Commodity(commodity));
     this.books.asks[commodity.name] = Array();
     this.books.bids[commodity.name] = Array();
-    this.history.price[commodity.name] = Array(1,1.2,1.3); //dummy float to avoid division by zero
+    this.history.price[commodity.name] = [1]; //dummy float to avoid division by zero
     this.history.asks[commodity.name] = Array();
     this.history.bids[commodity.name] = Array();
     this.history.trades[commodity.name] = Array();
@@ -924,9 +923,6 @@ var Economia = createClass('Economia', {
         ratio = bids / asks ;
       }
     
-
-      console.log(commodity.name, ratio);
-
       if ( ratio > minimum && ratio > bestRatio) {
         bestRatio = ratio;
         bestMarket = commodity.name;
@@ -957,8 +953,12 @@ var Economia = createClass('Economia', {
       var arr = this.agents.filter(function(agent){
         return agent.role.id == role;
       }, role);
-      var logic = arr[0].role.logic;
-      console.log(logic); //return the first agent to match;
+      if (arr.length){
+        var logic = arr[0].role.logic;
+      } else {
+        console.log(arr, commodity, role);
+      }
+      // console.log(logic); //return the first agent to match;
       var amount = logic.getProduction(commodity, logic.root);
       if (amount > bestAmount){
         bestAmount = amount;
@@ -983,7 +983,7 @@ var Economia = createClass('Economia', {
     };
     
     var newAgent = new Agent(this.roles[bestRole],this);
-    this.agents.pop(agent);
+    this.agents.splice(this.agents.indexOf(agent),1);
     newAgent.id = agent.id;
     console.log('Agent '+ agent.id + ' (a '+agent.role.id+') went bankrupt. He was replaced by a ' + bestRole) //bankrupt
     this.agents.push(newAgent);
@@ -1008,6 +1008,10 @@ var Economia = createClass('Economia', {
       var inventory = agent.inventory.list();
       agent._cash = agent.cash;
 
+      if (agent.cash <= 0){
+        this.replaceAgent(agent);
+      }
+
       agent.role.logic.perform(agent, agent.role.logic.root);
 
       inventory.forEach(function(commodity){
@@ -1019,11 +1023,6 @@ var Economia = createClass('Economia', {
       this.resolveOffers(commodity.name);
     }, this);
 
-    this.agents.forEach(function(agent){
-      if (agent.cash <= 0){
-        this.replaceAgent(agent);
-      }
-    }, this);
 
     if(typeof(render) === 'function'){
       render(this);
